@@ -1,0 +1,24 @@
+name: buid images
+
+on:
+  push:
+    tags:
+    - '[0-9].[0-9]+.*'
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Declare some variables
+        id: vars
+        shell: bash
+        run: |
+          echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+          echo '::set-output name=tag_name::${GITHUB_REF#refs/tags/}'
+      - name: Docker build & push
+        run: |
+          IMAGE=${{ secrets.REGISTRY }}/llaoj/php:${{ steps.vars.outputs.tag_name }}
+          docker build -t $IMAGE .
+          docker login -u ${{ secrets.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }} ${{ secrets.REGISTRY }}
+          docker push $IMAGE
