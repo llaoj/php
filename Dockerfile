@@ -5,3 +5,5 @@ RUN apk add --no-cache --virtual .build-deps \
 
 RUN pecl install yaml-2.2.2 \
     && docker-php-ext-enable yaml
+
+RUN docker-php-ext-install pdo_mysql
