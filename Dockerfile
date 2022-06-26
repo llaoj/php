@@ -1,4 +1,4 @@
-FROM php:7.4-fpm-alpine
+FROM php:7.4-fpm
 
 ADD conf/php-user.ini $PHP_INI_DIR/conf.d/
 ADD conf/zz-user.conf $PHP_INI_DIR/../php-fpm.d/
