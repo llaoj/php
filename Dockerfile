@@ -1,9 +1,5 @@
 FROM php:7.4-fpm
 
-ADD conf/php-user.ini $PHP_INI_DIR/conf.d/
-ADD conf/zz-user.conf $PHP_INI_DIR/../php-fpm.d/
-# ADD conf/sources.list /etc/apt/sources.list
-
 RUN apt-get update && apt-get install -y \
         git \
         libzip-dev \
@@ -25,6 +21,10 @@ RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/i
 RUN pecl install redis && docker-php-ext-enable redis
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 RUN mkdir -p /root/.ssh/ && echo "Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile /dev/null" > /root/.ssh/config
+
+ADD conf/php-user.ini $PHP_INI_DIR/conf.d/
+ADD conf/zz-user.conf $PHP_INI_DIR/../php-fpm.d/
+# ADD conf/sources.list /etc/apt/sources.list
 
 RUN curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/composer \
