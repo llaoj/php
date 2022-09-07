@@ -18,15 +18,13 @@ jobs:
           echo '::set-output name=tag_name::${GITHUB_REF#refs/tags/}'
       - name: php74
         if: startsWith(github.ref, 'refs/tags/7.4')
-        env: 
-          DOCKERFILE: php74/Dockerfile
+        run: echo "dockerfile=php74/Dockerfile" >> $GITHUB_ENV
       - name: php81
         if: startsWith(github.ref, 'refs/tags/8.1')
-        env: 
-          DOCKERFILE: php81/Dockerfile
+        run: echo "dockerfile=php81/Dockerfile" >> $GITHUB_ENV
       - name: Docker build & push
         run: |
           IMAGE=${{ secrets.REGISTRY }}/llaoj/php:${{ steps.vars.outputs.tag_name }}
-          docker build -f $DOCKERFILE -t $IMAGE .
+          docker build -f ${{ env.dockerfile }} -t $IMAGE .
           docker login -u ${{ secrets.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }} ${{ secrets.REGISTRY }}
           docker push $IMAGE
