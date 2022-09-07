@@ -16,9 +16,15 @@ jobs:
         run: |
           echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
           echo '::set-output name=tag_name::${GITHUB_REF#refs/tags/}'
+      - name: php74
+        if: startsWith(steps.vars.outputs.tag_name,'7.4')
+        run: DOCKERFILE=php74/Dockerfile
+      - name: php81
+        if: startsWith(steps.vars.outputs.tag_name,'8.1')
+        run: DOCKERFILE=php81/Dockerfile
       - name: Docker build & push
         run: |
           IMAGE=${{ secrets.REGISTRY }}/llaoj/php:${{ steps.vars.outputs.tag_name }}
-          docker build -t $IMAGE .
+          docker build -f $DOCKERFILE -t $IMAGE .
           docker login -u ${{ secrets.REGISTRY_USERNAME }} -p ${{ secrets.REGISTRY_PASSWORD }} ${{ secrets.REGISTRY }}
           docker push $IMAGE
